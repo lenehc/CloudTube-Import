@@ -33,8 +33,21 @@
     document.getElementById('importFile').addEventListener('change', importOptions);
 
     document.getElementById('delete').addEventListener('click', () => {
-        deleteFilters();
+        button = document.getElementById('delete');
+        if (!button.disabled) deleteFilters(button);
     });
+
+    function disableButton(button) {
+        button.style.userSelect = 'none';
+        button.style.color = '#999';
+        button.style.cursor = 'default';
+        button.style.backgroundColor = '#28282c';
+        button.style.color = '#999';
+    }
+
+    function enableButton(button) {
+        button.setAttribute('style', '');
+    }
     
     async function populateFilters(obj) {
         let currentFilters = getFilters();
@@ -100,11 +113,15 @@
         return filters;
     }
 
-    async function deleteFilters() {
+    async function deleteFilters(deleteButton) {
+        deleteButton.disabled = true;
+        disableButton(deleteButton);
         let requests = Array.from(document.querySelectorAll('input[name="delete-id"]')).map((elem) => {
             return post('filters/delete', `delete-id=${elem.value}`);
         })
         await Promise.all(requests);
+        deleteButton.disabled = false;
+        enableButton(deleteButton);
         location.reload();
     }
 
